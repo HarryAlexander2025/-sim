@@ -1,22 +1,27 @@
 name: Build APK
+
 on:
   push:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
+
 jobs:
   build:
     name: Generate APK
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
         run: echo "Step 1: Checkout repository completed in $(date +%s)"
+
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: 17
+
       - name: Cache Gradle packages
         uses: actions/cache@v3
         with:
@@ -27,10 +32,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
         run: echo "Step 3: Cache Gradle completed in $(date +%s)"
+
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew && echo "Step 4: Grant execute permission completed in $(date +%s)"
+
       - name: Build APK
         run: ./gradlew assembleDebug && echo "Step 5: Build APK completed in $(date +%s)"
+
       - name: Check if APK exists
         run: |
           if [ -f app/build/outputs/apk/debug/app-debug.apk ]; then
@@ -39,6 +47,7 @@ jobs:
             echo "APK does not exist"
             exit 1
           fi
+
       - name: Upload APK artifact
         uses: actions/upload-artifact@v2
         with:
